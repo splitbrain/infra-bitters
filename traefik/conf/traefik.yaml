@@ -36,14 +36,14 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: andi@splitbrain.org
-      storage: "/traefik/cert/letsencrypt.json"
+      storage: "/cert/letsencrypt.json"
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
   gandi:
     acme:
       email: andi@splitbrain.org
-      storage: "/traefik/cert/gandi.json"
+      storage: "/cert/gandi.json"
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       dnsChallenge:
         provider: gandiv5
