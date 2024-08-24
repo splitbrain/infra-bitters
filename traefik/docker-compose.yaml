@@ -18,6 +18,8 @@ services:
       LEGO_DISABLE_CNAME_SUPPORT: true
       PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
       PORKBUN_API_KEY: ${PORKBUN_API_KEY}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER}
+      BASIC_AUTH_PASSWORD: ${BASIC_AUTH_PASSWORD}
     command:
       - "--configFile=/traefik/traefik.yaml"
     labels:
@@ -25,6 +27,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.net`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.middlewares=basicauth@file"
 
   whoami:
     image: traefik/whoami:latest

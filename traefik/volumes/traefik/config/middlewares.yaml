@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    basicauth:
+      basicAuth:
+        users:
+          - "{{ env "BASIC_AUTH_USER" }}:{{ env "BASIC_AUTH_PASSWORD" }}"

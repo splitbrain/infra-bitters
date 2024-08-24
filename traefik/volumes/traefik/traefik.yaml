@@ -28,7 +28,9 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: "traefik"
-
+  file:
+    directory: /traefik/config
+    watch: true
 
 certificatesResolvers:
   letsencrypt:
