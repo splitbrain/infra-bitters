@@ -1,0 +1,18 @@
+services:
+  commie:
+    image: chialab/php:8.2-apache
+    container_name: commie
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app:/var/www/html/
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.commie.rule=Host(`commie.splitbrain.net`)"
+      - "traefik.http.routers.commie.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
