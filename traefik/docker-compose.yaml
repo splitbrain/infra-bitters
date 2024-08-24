@@ -1,0 +1,45 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - traefik
+    ports:
+      - 8088:8088
+      - 8081:8080
+      - 8443:8443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./volumes/traefik:/traefik
+    environment:
+      LEGO_DISABLE_CNAME_SUPPORT: true
+      PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
+      PORKBUN_API_KEY: ${PORKBUN_API_KEY}
+    command:
+      - "--configFile=/traefik/traefik.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.net`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  whoami:
+    image: traefik/whoami:latest
+    container_name: whoami
+    restart: unless-stopped
+    command:
+      - "--verbose"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.splitbrain.net`)"
+      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
