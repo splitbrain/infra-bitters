@@ -5,7 +5,7 @@ global:
 
 entryPoints:
   web:
-    address: ":8088"
+    address: ":80"
     http:
       redirections:
         entryPoint:
@@ -13,7 +13,7 @@ entryPoints:
           scheme: https
 
   websecure:
-    address: ":8443"
+    address: ":443"
 
 api:
   dashboard: true
@@ -21,6 +21,7 @@ api:
 
 log:
   level: "INFO"
+  format: "common"
 
 providers:
   docker:

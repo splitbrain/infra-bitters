@@ -8,9 +8,8 @@ services:
     networks:
       - traefik
     ports:
-      - 8088:8088
-      - 8081:8080
-      - 8443:8443
+      - 80:80
+      - 443:443
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -25,6 +24,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.net`)"
       - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
 
   whoami:
     image: traefik/whoami:latest
