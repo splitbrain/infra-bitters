@@ -1,0 +1,21 @@
+services:
+  bms:
+    image: joseluisq/static-web-server:2-alpine
+    container_name: bms
+    restart: unless-stopped
+    volumes:
+      - ./volumes/public:/public
+
+    environment:
+      SERVER_IGNORE_HIDDEN_FILES: true
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bms.rule=Host(`bms.splitbrain.net`)"
+      - "traefik.http.routers.bms.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

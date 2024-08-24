@@ -13,8 +13,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./volumes/traefik:/traefik
+      - ./conf:/traefik
     environment:
+      TZ: Europe/Berlin
       LEGO_DISABLE_CNAME_SUPPORT: true
       PORKBUN_SECRET_API_KEY: ${PORKBUN_SECRET_API_KEY}
       PORKBUN_API_KEY: ${PORKBUN_API_KEY}
