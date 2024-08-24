@@ -1,0 +1,4 @@
+.env
+*/volumes/*
+!traefik/volumes/
+traefik/volumes/traefik/cert/
