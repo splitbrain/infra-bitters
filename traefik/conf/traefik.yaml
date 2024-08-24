@@ -21,7 +21,12 @@ api:
 
 log:
   level: "INFO"
-  format: "common"
+  maxBackups: 3
+  maxAge: 1
+  compress: true
+
+accessLog:
+  filePath: "/log/access.log"
 
 providers:
   docker:

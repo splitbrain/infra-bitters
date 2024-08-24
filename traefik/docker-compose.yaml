@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.1
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -15,6 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./conf:/traefik
       - ./volumes/cert:/cert
+      - ./volumes/log:/log
     environment:
       TZ: Europe/Berlin
       LEGO_DISABLE_CNAME_SUPPORT: true
@@ -42,7 +43,46 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.splitbrain.net`)"
       - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
 
+  goaccess:
+    image: allinurl/goaccess
+    restart: always
+    command: > 
+      /srv/logs/access.log
+      -o /srv/report/index.html
+      --real-time-html
+      --origin=https://goaccess.splitbrain.net
+      --ws-url=wss://goaccess.splitbrain.net:443/live
+      --log-format='%h %^[%d:%t %^] "%r" %s %b %R %u %^ %v %^ %Lms'
+      --time-format='%H:%M:%S'
+      --date-format='%d/%b/%Y'
+      --db-path=/srv/data
+      --persist
+      --restore
+    volumes:
+      - ./volumes/log:/srv/logs:ro
+      - ./volumes/web:/srv/report
+      - ./volumes/goaccess:/srv/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.goaccess.rule=Host(`goaccess.splitbrain.net`) && Path(`/live`)"
+      - "traefik.http.routers.goaccess.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+  goaccess-web:
+    image: joseluisq/static-web-server:2-alpine
+    restart: unless-stopped
+    volumes:
+      - ./volumes/web:/public
+    environment:
+      SERVER_IGNORE_HIDDEN_FILES: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.goaccess-web.rule=Host(`goaccess.splitbrain.net`)"
+      - "traefik.http.routers.goaccess-web.tls.certresolver=letsencrypt"
     networks:
       - traefik
 
