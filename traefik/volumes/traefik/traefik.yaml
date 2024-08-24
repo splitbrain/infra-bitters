@@ -40,3 +40,10 @@ certificatesResolvers:
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
+  gandi:
+    acme:
+      email: andi@splitbrain.org
+      storage: "/traefik/gandi.json"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: gandiv5

@@ -1,0 +1,21 @@
+services:
+  hazwiki:
+    image: dokuwiki/dokuwiki:stable
+    container_name: hazwiki
+    restart: unless-stopped
+    volumes:
+      - ./volumes/storage:/storage
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hazwiki.rule=HostRegexp(`.+.fixme.haz.wiki`)"
+      - "traefik.http.routers.hazwiki.tls.certresolver=gandi"
+      - "traefik.http.routers.hazwiki.tls.domains[0].main=*.fixme.haz.wiki"
+      - "traefik.http.routers.hazwiki.tls.domains[0].sans=fixme.haz.wiki"
+      - "traefik.http.services.hazwiki.loadbalancer.server.port=8080"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
