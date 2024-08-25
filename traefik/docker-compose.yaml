@@ -40,13 +40,16 @@ services:
     command: >
       /srv/logs/access.log
       -o /srv/report/index.html
+      --agent-list
+      --with-output-resolver
       --real-time-html
       --origin=https://goaccess.splitbrain.org
       --ws-url=wss://goaccess.splitbrain.org:443/live
-      --log-format='%h %^[%d:%t %^] "%r" %s %b %R %u %^ %v %^ %Lms'
+      --log-format='TRAEFIKCLF'
       --time-format='%H:%M:%S'
       --date-format='%d/%b/%Y'
       --db-path=/srv/data
+      --geoip-database=/srv/data/GeoLite2-City.mmdb
       --persist
       --restore
     volumes:
@@ -54,10 +57,15 @@ services:
       - ./volumes/web:/srv/report
       - ./volumes/goaccess:/srv/data
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.goaccess.rule=Host(`goaccess.splitbrain.org`) && Path(`/live`)"
-      - "traefik.http.routers.goaccess.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.goaccess.middlewares=basicauth@file"
+      traefik.enable: true
+      traefik.http.routers.goaccess.rule: Host(`goaccess.splitbrain.org`) && Path(`/live`)
+      traefik.http.routers.goaccess.tls.certresolver: letsencrypt"
+      traefik.http.routers.goaccess.middlewares: basicauth@file"
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.goaccess-citydb.schedule: "@monthly"
+      chadburn.job-exec.goaccess-citydb.command: "wget https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb -O /srv/data/GeoLite2-City.mmdb"
+
     networks:
       - traefik
 
