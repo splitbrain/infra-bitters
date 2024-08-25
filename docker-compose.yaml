@@ -1,0 +1,7 @@
+include:
+  - traefik/docker-compose.yaml
+  - bms/docker-compose.yaml
+  - commie/docker-compose.yaml
+  - rafinfo/docker-compose.yaml
+  - hazwiki/docker-compose.yaml
+
