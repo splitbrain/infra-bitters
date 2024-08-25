@@ -3,8 +3,9 @@ services:
     image: joseluisq/static-web-server:2-alpine
     container_name: rafinfo
     restart: unless-stopped
+    user: 1004:1004
     volumes:
-      - ./volumes/public:/public
+      - ./volumes/htdocs:/public
       - ./conf/config.toml:/etc/config.toml
 
     environment:
@@ -13,8 +14,9 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.rafinfo.rule=Host(`rafinfo.splitbrain.net`)"
+      - "traefik.http.routers.rafinfo.rule=Host(`www.rafinfo.de`) || Host(`rafinfo.de`)"
       - "traefik.http.routers.rafinfo.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.rafinfo.middlewares=redirect-to-www@file"
     networks:
       - traefik
 

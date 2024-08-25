@@ -1,0 +1,19 @@
+services:
+  mancx:
+    image: chialab/php:8.2-apache
+    container_name: mancx
+    user: 1003:1003
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app:/var/www/
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mancx.rule=Host(`man.cx`)"
+      - "traefik.http.routers.mancx.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

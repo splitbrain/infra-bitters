@@ -1,0 +1,20 @@
+services:
+  splitbrain:
+    image: chialab/php:8.2-apache
+    container_name: splitbrain
+    user: 1005:1005 # splitbrain
+    restart: unless-stopped
+    volumes:
+      - ./volumes/htdocs:/var/www/html/
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.splitbrain.rule=Host(`www.splitbrain.org`) || Host(`splitbrain.org`)"
+      - "traefik.http.routers.splitbrain.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.splitbrain.middlewares=redirect-to-www@file"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

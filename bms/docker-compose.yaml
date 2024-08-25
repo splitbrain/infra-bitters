@@ -2,16 +2,19 @@ services:
   bms:
     image: joseluisq/static-web-server:2-alpine
     container_name: bms
+    user: 1002:1002
     restart: unless-stopped
     volumes:
-      - ./volumes/public:/public
+      - ./volumes/htdocs:/public
+      - ./conf/config.toml:/etc/config.toml
 
     environment:
       SERVER_IGNORE_HIDDEN_FILES: true
+      SERVER_CONFIG_FILE: /etc/config.toml
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bms.rule=Host(`bms.splitbrain.net`)"
+      - "traefik.http.routers.bms.rule=Host(`bms.splitbrain.org`)"
       - "traefik.http.routers.bms.tls.certresolver=letsencrypt"
     networks:
       - traefik

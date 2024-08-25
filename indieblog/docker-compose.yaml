@@ -1,0 +1,19 @@
+services:
+  indieblog:
+    image: chialab/php:8.2-apache
+    container_name: indieblog
+    user: 1015:1015
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app:/var/www/
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.indieblog.rule=Host(`indieblog.page`)"
+      - "traefik.http.routers.indieblog.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

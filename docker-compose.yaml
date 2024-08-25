@@ -1,7 +1,10 @@
 include:
   - traefik/docker-compose.yaml
-  - bms/docker-compose.yaml
-  - commie/docker-compose.yaml
-  - rafinfo/docker-compose.yaml
+  - splitbrain/docker-compose.yaml
   - hazwiki/docker-compose.yaml
+  - rafinfo/docker-compose.yaml
+  - commie/docker-compose.yaml
+  - bms/docker-compose.yaml
+  - indieblog/docker-compose.yaml
+  - mancx/docker-compose.yaml
 
