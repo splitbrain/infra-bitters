@@ -28,33 +28,21 @@ services:
       - "--configFile=/traefik/traefik.yaml"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.net`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.org`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.middlewares=basicauth@file"
 
-  whoami:
-    image: traefik/whoami:latest
-    container_name: whoami
-    restart: unless-stopped
-    command:
-      - "--verbose"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.splitbrain.net`)"
-      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
-    networks:
-      - traefik
-
   goaccess:
     image: allinurl/goaccess
-    restart: always
-    command: > 
+    container_name: goaccess
+    restart: unless-stopped
+    command: >
       /srv/logs/access.log
       -o /srv/report/index.html
       --real-time-html
-      --origin=https://goaccess.splitbrain.net
-      --ws-url=wss://goaccess.splitbrain.net:443/live
+      --origin=https://goaccess.splitbrain.org
+      --ws-url=wss://goaccess.splitbrain.org:443/live
       --log-format='%h %^[%d:%t %^] "%r" %s %b %R %u %^ %v %^ %Lms'
       --time-format='%H:%M:%S'
       --date-format='%d/%b/%Y'
@@ -67,13 +55,14 @@ services:
       - ./volumes/goaccess:/srv/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.goaccess.rule=Host(`goaccess.splitbrain.net`) && Path(`/live`)"
+      - "traefik.http.routers.goaccess.rule=Host(`goaccess.splitbrain.org`) && Path(`/live`)"
       - "traefik.http.routers.goaccess.tls.certresolver=letsencrypt"
     networks:
       - traefik
 
   goaccess-web:
     image: joseluisq/static-web-server:2-alpine
+    container_name: goaccess-web
     restart: unless-stopped
     volumes:
       - ./volumes/web:/public
@@ -81,7 +70,7 @@ services:
       SERVER_IGNORE_HIDDEN_FILES: true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.goaccess-web.rule=Host(`goaccess.splitbrain.net`)"
+      - "traefik.http.routers.goaccess-web.rule=Host(`goaccess.splitbrain.org`)"
       - "traefik.http.routers.goaccess-web.tls.certresolver=letsencrypt"
     networks:
       - traefik
