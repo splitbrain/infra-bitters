@@ -8,7 +8,7 @@ services:
       SSH_PORT: 23
       SSH_USER: u408911
       SSH_REMOTE_PATH: /home/backup/bitters.splitbrain.org
-      BACKUP_EXCLUDE_REGEXP: /(log|cache)/
+      BACKUP_EXCLUDE_REGEXP: /(logs?|cache)/
       BACKUP_FILENAME: backup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: backup-
       BACKUP_RETENTION_DAYS: 3
