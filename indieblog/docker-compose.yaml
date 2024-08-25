@@ -8,9 +8,26 @@ services:
       - ./volumes/app:/var/www/
 
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.indieblog.rule=Host(`indieblog.page`)"
-      - "traefik.http.routers.indieblog.tls.certresolver=letsencrypt"
+      traefik.enable: true
+      traefik.http.routers.indieblog.rule: Host(`indieblog.page`)
+      traefik.http.routers.indieblog.tls.certresolver: letsencrypt
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.indieblog-update.schedule: "44 11 * * *"
+      chadburn.job-exec.indieblog-update.command: "php /var/www/blogrng.php update"
+
+      chadburn.job-exec.indieblog-random1.schedule: "0 8 * * *"
+      chadburn.job-exec.indieblog-random1.command: "php /var/www/blogrng.php postRandom"
+
+      chadburn.job-exec.indieblog-random2.schedule: "0 20 * * *"
+      chadburn.job-exec.indieblog-random2.command: "php /var/www/blogrng.php postRandom"
+
+      chadburn.job-exec.indieblog-rss.schedule: "37 * * * *"
+      chadburn.job-exec.indieblog-rss.command: "php /var/www/blogrng.php rss"
+
+      chadburn.job-exec.indieblog-profiles.schedule: "22 1 * * 2"
+      chadburn.job-exec.indieblog-profiles.command: "php /var/www/blogrng.php findProfiles"
+
     networks:
       - traefik
 
