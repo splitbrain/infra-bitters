@@ -4,3 +4,8 @@ http:
       basicAuth:
         users:
           - "{{ env "BASIC_AUTH_USER" }}:{{ env "BASIC_AUTH_PASSWORD" }}"
+    redirect-to-www:
+      redirectRegex:
+        regex: "^https?://(?:www\\.)?(.+)"
+        replacement: "https://www.$1"
+        permanent: true
