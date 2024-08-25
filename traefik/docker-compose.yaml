@@ -57,6 +57,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.goaccess.rule=Host(`goaccess.splitbrain.org`) && Path(`/live`)"
       - "traefik.http.routers.goaccess.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.goaccess.middlewares=basicauth@file"
     networks:
       - traefik
 
@@ -72,6 +73,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.goaccess-web.rule=Host(`goaccess.splitbrain.org`)"
       - "traefik.http.routers.goaccess-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.goaccess-web.middlewares=basicauth@file"
     networks:
       - traefik
 
