@@ -42,21 +42,21 @@ certificatesResolvers:
     acme:
       email: andi@splitbrain.org
       storage: "/cert/letsencrypt.json"
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
   gandi:
     acme:
       email: andi@splitbrain.org
       storage: "/cert/gandi.json"
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       dnsChallenge:
         provider: gandiv5
   porkbun:
     acme:
       email: andi@splitbrain.org
       storage: "/cert/porkbun.json"
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       dnsChallenge:
         provider: porkbun
 
