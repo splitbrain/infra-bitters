@@ -27,11 +27,15 @@ services:
     command:
       - "--configFile=/traefik/traefik.yaml"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.splitbrain.org`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.middlewares=basicauth@file"
+      traefik.enable: true
+      traefik.http.routers.traefik.rule: Host(`traefik.splitbrain.org`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.tls.certresolver: letsencrypt
+      traefik.http.routers.traefik.middlewares: basicauth@file
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.traefik-logrotate.schedule: "@weekly"
+      chadburn.job-exec.traefik-logrotate.command: "/traefik/logrotate.sh"
 
   goaccess:
     image: allinurl/goaccess
@@ -59,8 +63,8 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.goaccess.rule: Host(`goaccess.splitbrain.org`) && Path(`/live`)
-      traefik.http.routers.goaccess.tls.certresolver: letsencrypt"
-      traefik.http.routers.goaccess.middlewares: basicauth@file"
+      traefik.http.routers.goaccess.tls.certresolver: letsencrypt
+      traefik.http.routers.goaccess.middlewares: basicauth@file
 
       chadburn.enabled: "true"
       chadburn.job-exec.goaccess-citydb.schedule: "@monthly"
@@ -78,10 +82,10 @@ services:
     environment:
       SERVER_IGNORE_HIDDEN_FILES: true
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.goaccess-web.rule=Host(`goaccess.splitbrain.org`)"
-      - "traefik.http.routers.goaccess-web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.goaccess-web.middlewares=basicauth@file"
+      traefik.enable: true
+      traefik.http.routers.goaccess-web.rule: Host(`goaccess.splitbrain.org`)
+      traefik.http.routers.goaccess-web.tls.certresolver: letsencrypt
+      traefik.http.routers.goaccess-web.middlewares: basicauth@file
     networks:
       - traefik
 
