@@ -3,12 +3,12 @@ services:
     image: ghcr.io/borgmatic-collective/borgmatic
     container_name: borgmatic
     volumes:
-      - /srv:/mnt/source:ro                      # backup source
-      - /backup/borg:/mnt/borg-repository        # backup target
+      - /srv:/mnt/source/srv:ro                  # backup srv
+      - /etc:/mnt/source/etc:ro                  # backup host etc
       - ./conf/borgmatic:/etc/borgmatic.d/       # borgmatic config file(s) + crontab.txt
       - ./volumes/borg:/root/.config/borg        # borg config and keyfiles
       - ./conf/ssh:/root/.ssh                    # ssh key for remote repositories
-      - /backup/borg-cache:/root/.cache/borg     # checksums used for deduplication
+      - ./volumes/cache:/root/.cache/borg        # checksums used for deduplication
     environment:
       TZ: Europe/Berlin
       BORG_PASSPHRASE: ${BORG_PASSPHRASE}

@@ -1,9 +1,8 @@
 source_directories:
-    - /mnt/source
+    - /mnt/source/srv
+    - /mnt/source/etc
 repositories:
-    - path: /mnt/borg-repository/repo
-      name: local
-    - path: ssh://u408911@u408911.your-storagebox.de:23/home/backup/bitters.borg/repo
+    - path: ssh://u408911@u408911.your-storagebox.de:23/home/borg/bitters/repo
       name: hetzner
 one_file_system: true
 
