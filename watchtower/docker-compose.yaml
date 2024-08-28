@@ -10,8 +10,21 @@ services:
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER: 172.17.0.1
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: 25
       WATCHTOWER_NOTIFICATION_EMAIL_SERVER_TLS_SKIP_VERIFY: true
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_HTTP_API_TOKEN}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
-    command:
-      - "--cleanup"
+    command: --cleanup --http-api-update --http-api-periodic-polls
+
+    labels:
+      traefik.enable: true
+      traefik.http.routers.watchtower.rule: Host(`watchtower.splitbrain.org`)
+      traefik.http.routers.watchtower.tls.certresolver: letsencrypt
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
+
