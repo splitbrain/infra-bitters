@@ -2,7 +2,7 @@ include:
   - traefik/docker-compose.yaml
   - chadburn/docker-compose.yaml
   - watchtower/docker-compose.yaml
-  - backup/docker-compose.yaml
+  - borgmatic/docker-compose.yaml
 
   - splitbrain/docker-compose.yaml
   - hazwiki/docker-compose.yaml

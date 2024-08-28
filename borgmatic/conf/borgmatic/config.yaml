@@ -1,0 +1,57 @@
+source_directories:
+    - /mnt/source
+repositories:
+    - path: /mnt/borg-repository/repo
+      name: local
+    - path: ssh://u408911@u408911.your-storagebox.de:23/home/backup/bitters.borg/repo
+      name: hetzner
+one_file_system: true
+
+#   Passphase is set in varibable $BORG_PASSPHRASE
+#   encryption_passphrase: "DoNotForgetToChangeYourPassphrase"
+compression: zlib
+archive_name_format: 'backup-{now}'
+
+exclude_patterns:
+  - '*/log/*'
+  - '*/logs/*'
+  - '*.log'
+  - '*/cache/*'
+  - '*.cache'
+
+# Exclude directories that contain a CACHEDIR.TAG file. See
+# http://www.brynosaurus.com/cachedir/spec.html for details. Defaults
+# to false.
+exclude_caches: true
+
+# Exclude directories that contain a file with the given filenames.
+# Defaults to not set.
+exclude_if_present:
+  - .nobackup
+
+
+#keep_hourly: 2
+keep_daily: 1
+keep_weekly: 1
+keep_monthly: 1
+#keep_yearly: 10
+
+checks:
+  - name: repository
+    frequency: 2 weeks
+  - name: archives
+    frequency: always
+  - name: extract
+    frequency: 2 weeks
+  - name: data
+    frequency: 1 month
+
+before_everything:
+    - echo "Starting a backup job."
+after_everything:
+    - echo "Backup created."
+on_error:
+    - echo "Error while creating a backup."
+
+#healthchecks:
+#    ping_url: ${BORG_HEALTHCHECK_URL}
