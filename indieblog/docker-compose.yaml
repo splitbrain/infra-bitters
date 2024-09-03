@@ -1,11 +1,11 @@
 services:
   indieblog:
-    image: chialab/php:8.2-apache
+    image: ghcr.io/splitbrain/blogrng:latest
     container_name: indieblog
     user: 1015:1015
     restart: unless-stopped
     volumes:
-      - ./volumes/app:/var/www/
+      - ./volumes/data:/app/data
 
     labels:
       traefik.enable: true
@@ -14,19 +14,19 @@ services:
 
       chadburn.enabled: "true"
       chadburn.job-exec.indieblog-update.schedule: "44 11 * * *"
-      chadburn.job-exec.indieblog-update.command: "php /var/www/blogrng.php update"
+      chadburn.job-exec.indieblog-update.command: "php /app/blogrng.php update"
 
       chadburn.job-exec.indieblog-random1.schedule: "0 8 * * *"
-      chadburn.job-exec.indieblog-random1.command: "php /var/www/blogrng.php postRandom"
+      chadburn.job-exec.indieblog-random1.command: "php /app/blogrng.php postRandom"
 
       chadburn.job-exec.indieblog-random2.schedule: "0 20 * * *"
-      chadburn.job-exec.indieblog-random2.command: "php /var/www/blogrng.php postRandom"
+      chadburn.job-exec.indieblog-random2.command: "php /app/blogrng.php postRandom"
 
       chadburn.job-exec.indieblog-rss.schedule: "37 * * * *"
-      chadburn.job-exec.indieblog-rss.command: "php /var/www/blogrng.php rss"
+      chadburn.job-exec.indieblog-rss.command: "php /app/blogrng.php rss"
 
       chadburn.job-exec.indieblog-profiles.schedule: "22 1 * * 2"
-      chadburn.job-exec.indieblog-profiles.command: "php /var/www/blogrng.php findProfiles"
+      chadburn.job-exec.indieblog-profiles.command: "php /app/blogrng.php findProfiles"
 
     networks:
       - traefik
