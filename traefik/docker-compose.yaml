@@ -28,7 +28,7 @@ services:
       - "--configFile=/traefik/traefik.yaml"
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`traefik.splitbrain.org`)
+      traefik.http.routers.traefik.rule: Host(`traefik.splitbrain.net`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.tls.certresolver: letsencrypt
       traefik.http.routers.traefik.middlewares: basicauth@file
@@ -47,8 +47,8 @@ services:
       --agent-list
       --with-output-resolver
       --real-time-html
-      --origin=https://goaccess.splitbrain.org
-      --ws-url=wss://goaccess.splitbrain.org:443/live
+      --origin=https://goaccess.splitbrain.net
+      --ws-url=wss://goaccess.splitbrain.net:443/live
       --log-format='TRAEFIKCLF'
       --time-format='%H:%M:%S'
       --date-format='%d/%b/%Y'
@@ -62,7 +62,7 @@ services:
       - ./volumes/goaccess:/srv/data
     labels:
       traefik.enable: true
-      traefik.http.routers.goaccess.rule: Host(`goaccess.splitbrain.org`) && Path(`/live`)
+      traefik.http.routers.goaccess.rule: Host(`goaccess.splitbrain.net`) && Path(`/live`)
       traefik.http.routers.goaccess.tls.certresolver: letsencrypt
       traefik.http.routers.goaccess.middlewares: basicauth@file
 
@@ -83,7 +83,7 @@ services:
       SERVER_IGNORE_HIDDEN_FILES: true
     labels:
       traefik.enable: true
-      traefik.http.routers.goaccess-web.rule: Host(`goaccess.splitbrain.org`)
+      traefik.http.routers.goaccess-web.rule: Host(`goaccess.splitbrain.net`)
       traefik.http.routers.goaccess-web.tls.certresolver: letsencrypt
       traefik.http.routers.goaccess-web.middlewares: basicauth@file
     networks:

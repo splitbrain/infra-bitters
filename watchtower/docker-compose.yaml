@@ -18,7 +18,7 @@ services:
 
     labels:
       traefik.enable: true
-      traefik.http.routers.watchtower.rule: Host(`watchtower.splitbrain.org`)
+      traefik.http.routers.watchtower.rule: Host(`watchtower.splitbrain.net`)
       traefik.http.routers.watchtower.tls.certresolver: letsencrypt
 
     networks:
