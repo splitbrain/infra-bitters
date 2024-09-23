@@ -11,8 +11,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.hazwiki.rule=HostRegexp(`.+.haz.wiki`)"
       - "traefik.http.routers.hazwiki.tls.certresolver=gandi"
-      - "traefik.http.routers.hazwiki.tls.domains[0].main=*.haz.wiki"
-      - "traefik.http.routers.hazwiki.tls.domains[0].sans=haz.wiki"
+      - "traefik.http.routers.hazwiki.tls.domains[0].main=haz.wiki"
+      - "traefik.http.routers.hazwiki.tls.domains[0].sans=*.haz.wiki"
       - "traefik.http.services.hazwiki.loadbalancer.server.port=8080"
     networks:
       - traefik
