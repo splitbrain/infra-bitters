@@ -9,3 +9,8 @@ http:
         regex: "^https?://(?:www\\.)?(.+)"
         replacement: "https://www.$1"
         permanent: true
+    blockpath:
+      plugin:
+        blockpath:
+          regex:
+            - "/\\.git/"
