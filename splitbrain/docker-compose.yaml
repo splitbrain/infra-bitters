@@ -8,10 +8,14 @@ services:
       - ./volumes/htdocs:/var/www/html/
 
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.splitbrain.rule=Host(`www.splitbrain.org`) || Host(`splitbrain.org`)"
-      - "traefik.http.routers.splitbrain.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.splitbrain.middlewares=redirect-to-www@file"
+      traefik.enable: true
+      traefik.http.routers.splitbrain.rule: Host(`www.splitbrain.org`) || Host(`splitbrain.org`)"
+      traefik.http.routers.splitbrain.tls.certresolver: letsencrypt
+      traefik.http.routers.splitbrain.middlewares: redirect-to-www@file
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.linkblog.schedule: "@daily"
+      chadburn.job-exec.linkblog.command: "php   /var/www/html/lib/plugins/linkblog/cron.php"
     networks:
       - traefik
 
