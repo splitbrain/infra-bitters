@@ -19,6 +19,7 @@ services:
     image: axllent/mailpit
     container_name: harvila-mailpit
     restart: unless-stopped
+    env_file: ".env-mailpit"
 
     labels:
       traefik.enable: true
