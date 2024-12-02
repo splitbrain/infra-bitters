@@ -68,7 +68,7 @@ services:
 
       chadburn.enabled: "true"
       chadburn.job-exec.goaccess-citydb.schedule: "@monthly"
-      chadburn.job-exec.goaccess-citydb.command: "wget -nv https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb -O /srv/data/GeoLite2-City.mmdb.tmp && mv /srv/data/GeoLite2-City.mmdb.tmp /srv/data/GeoLite2-City.mmdb"
+      chadburn.job-exec.goaccess-citydb.command: "sh -c \"wget -nv https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb -O /srv/data/GeoLite2-City.mmdb.tmp && mv /srv/data/GeoLite2-City.mmdb.tmp /srv/data/GeoLite2-City.mmdb\""
 
     networks:
       - traefik
