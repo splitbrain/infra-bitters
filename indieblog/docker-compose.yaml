@@ -14,7 +14,7 @@ services:
 
       chadburn.enabled: "true"
       chadburn.job-exec.indieblog-update.schedule: "44 11 * * *"
-      chadburn.job-exec.indieblog-update.command: "php -d memory_limit=300M /app/blogrng.php update"
+      chadburn.job-exec.indieblog-update.command: "php -d memory_limit=600M /app/blogrng.php update"
 
       chadburn.job-exec.indieblog-random1.schedule: "0 8 * * *"
       chadburn.job-exec.indieblog-random1.command: "php /app/blogrng.php postRandom"
