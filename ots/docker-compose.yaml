@@ -1,0 +1,18 @@
+services:
+  ots:
+    image: ghcr.io/splitbrain/ots:latest
+    container_name: ots
+    user: 1017:1017
+    restart: unless-stopped
+
+    labels:
+      traefik.enable: true
+      traefik.http.routers.ots.rule: Host(`ots.splitbrain.org`)
+      traefik.http.routers.ots.tls.certresolver: letsencrypt
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

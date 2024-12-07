@@ -3,6 +3,7 @@ include:
   - chadburn/docker-compose.yaml
   - watchtower/docker-compose.yaml
   - borgmatic/docker-compose.yaml
+  - monitoring/docker-compose.yaml
 
   - splitbrain/docker-compose.yaml
   - hazwiki/docker-compose.yaml
@@ -11,6 +12,7 @@ include:
   - bms/docker-compose.yaml
   - indieblog/docker-compose.yaml
   - mancx/docker-compose.yaml
+  - ots/docker-compose.yaml
 
   - harvila/docker-compose.yaml
 
