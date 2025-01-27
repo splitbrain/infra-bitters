@@ -1,0 +1,20 @@
+services:
+  stuff:
+    image: chialab/php:8.2-apache
+    container_name: stuff
+    user: 1016:1016 # stuff
+    restart: unless-stopped
+    volumes:
+      - ./volumes/htdocs:/var/www/html/
+
+    labels:
+      traefik.enable: true
+      traefik.http.routers.stuff.rule: Host(`stuff.splitbrain.org`)
+      traefik.http.routers.stuff.tls.certresolver: letsencrypt
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik

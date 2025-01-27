@@ -6,6 +6,7 @@ include:
   - monitoring/docker-compose.yaml
 
   - splitbrain/docker-compose.yaml
+  - stuff/docker-compose.yaml
   - hazwiki/docker-compose.yaml
   - rafinfo/docker-compose.yaml
   - commie/docker-compose.yaml

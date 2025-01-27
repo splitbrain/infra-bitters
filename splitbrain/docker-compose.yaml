@@ -12,7 +12,12 @@ services:
       traefik.enable: true
       traefik.http.routers.splitbrain.rule: Host(`www.splitbrain.org`) || Host(`splitbrain.org`)
       traefik.http.routers.splitbrain.tls.certresolver: letsencrypt
-      traefik.http.routers.splitbrain.middlewares: redirect-to-www@file
+      traefik.http.routers.splitbrain.middlewares: redirect-to-www@file, splitbrain-static-redir@docker
+
+      # Note: all dollar signs need to be doubled for escaping.
+      traefik.http.middlewares.splitbrain-static-redir.redirectregex.regex: "^https://www.splitbrain.org/_static/(.*)"
+      traefik.http.middlewares.splitbrain-static-redir.redirectregex.replacement: "https://stuff.splitbrain.org/$${1}"
+      traefik.http.middlewares.splitbrain-static-redir.redirectregex.permanent: true
 
       chadburn.enabled: "true"
       chadburn.job-exec.linkblog.schedule: "@daily"
