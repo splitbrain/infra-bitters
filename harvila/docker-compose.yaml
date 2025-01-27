@@ -9,8 +9,21 @@ services:
 
     labels:
       traefik.enable: true
-      traefik.http.routers.harvila.rule: Host(`harvila.splitbrain.net`)
+      traefik.http.routers.harvila.rule: Host(`booking.winkel-hausboote.de`)
       traefik.http.routers.harvila.tls.certresolver: letsencrypt
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.harvila-autoconfirm.schedule: "30 01 * * *"
+      chadburn.job-exec.harvila-autoconfirm.command: "php artisan cron:autoconfirm"
+
+      chadburn.job-exec.harvila-reminder.schedule: "30 11 * * *"
+      chadburn.job-exec.harvila-reminder.command: "php artisan cron:reminder"
+
+      chadburn.job-exec.harvila-welcome.schedule: "00 12 * * *"
+      chadburn.job-exec.harvila-welcome.command: "php artisan cron:welcome"
+
+      chadburn.job-exec.harvila-import.schedule: "*/15 * * * *"
+      chadburn.job-exec.harvila-import.command: "php artisan cron:import"
 
     networks:
       - traefik
