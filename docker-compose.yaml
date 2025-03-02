@@ -14,6 +14,7 @@ include:
   - indieblog/docker-compose.yaml
   - mancx/docker-compose.yaml
   - ots/docker-compose.yaml
+  - fedi/docker-compose.yaml
 
   - harvila/docker-compose.yaml
 

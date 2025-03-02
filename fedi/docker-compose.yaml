@@ -1,0 +1,35 @@
+services:
+  fedi:
+    image: superseriousbusiness/gotosocial:latest
+    container_name: fedi
+    user: 1018:1018
+    restart: unless-stopped
+    volumes:
+      - ./volumes/gotosocial:/gotosocial/storage
+      - ./volumes/cache:/gotosocial/.cache
+
+    environment:
+      TZ: Europe/Berlin
+      GTS_HOST: fedi.splitbrain.org
+      GTS_DB_TYPE: sqlite
+      GTS_DB_ADDRESS: /gotosocial/storage/sqlite.db
+      GTS_LETSENCRYPT_ENABLED: "false"
+      GTS_WAZERO_COMPILATION_CACHE: /gotosocial/.cache
+      GTS_TRUSTED_PROXIES: "172.16.0.0/12"
+      GTS_SMTP_HOST: 172.17.0.1
+      GTS_SMTP_PORT: 25
+      GTS_SMTP_FROM: fedi@splitbrain.org
+
+
+    labels:
+      traefik.enable: true
+      traefik.http.routers.social.rule: Host(`fedi.splitbrain.org`)
+      traefik.http.routers.social.tls.certresolver: letsencrypt
+      traefik.http.services.social.loadbalancer.server.port: 8080
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
+
