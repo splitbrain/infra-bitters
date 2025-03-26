@@ -1,0 +1,28 @@
+services:
+  meh:
+    image: splitbrain/meh:latest
+    container_name: meh
+    user: 1019:1019
+    restart: unless-stopped
+    volumes:
+      - ./volumes/data:/app/data
+    environment:
+      MEH_SMTP_HOST: 172.17.0.1
+      MEH_SMTP_VERIFY: 0
+      MEH_NOTIFY_EMAIL: andi@splitbrain.org
+    labels:
+      traefik.enable: true
+      traefik.http.routers.meh.rule: Host(`meh.splitbrain.org`)
+      traefik.http.routers.meh.tls.certresolver: letsencrypt
+
+      chadburn.enabled: "true"
+      chadburn.job-exec.meh-splitbrain.schedule: "@every 15m"
+      chadburn.job-exec.meh-splitbrain.command: "/app/meh --site splitbrain mastodon"
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    name: traefik
+
