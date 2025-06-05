@@ -1,6 +1,6 @@
 services:
   chadburn:
-    image: premoweb/chadburn:latest
+    image: premoweb/chadburn:1.0.7
     container_name: chadburn
     restart: unless-stopped
     command: daemon
