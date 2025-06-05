@@ -18,9 +18,19 @@ entryPoints:
       middlewares:
         - blockpath@file
 
+  metrics:
+    address: ":8082"
+
 api:
   dashboard: true
   insecure: true
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    entryPoint: metrics
 
 log:
   level: "INFO"

@@ -1,0 +1,58 @@
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - ./conf/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ./volumes/prometheus:/prometheus
+    labels:
+      traefik.enable: true
+      traefik.http.routers.prometheus.rule: Host(`prometheus.splitbrain.net`)
+      traefik.http.routers.prometheus.tls.certresolver: letsencrypt
+      traefik.http.routers.prometheus.middlewares: basicauth@file
+    networks:
+      - traefik
+      - monitoring
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    volumes:
+      - ./volumes/grafana:/var/lib/grafana
+    restart: unless-stopped
+    labels:
+      traefik.enable: true
+      traefik.http.routers.grafana.rule: Host(`grafana.splitbrain.net`)
+      traefik.http.routers.grafana.tls.certresolver: letsencrypt
+      traefik.http.routers.grafana.middlewares: basicauth@file
+    networks:
+      - traefik
+
+  dex:
+    image: spx01/dex
+    container_name: dex
+    volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node-exporter
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - /:/host:ro,rslave
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+networks:
+  traefik:
+    name: traefik
+  monitoring:
+    name: monitoring
+
