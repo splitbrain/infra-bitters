@@ -1,0 +1,54 @@
+## Enable this to restrict editing to logged in users only
+
+#disable indexes
+Options -Indexes
+
+## make sure nobody gets the htaccess files
+<Files ~ "^[\._]ht">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</Files>
+
+RewriteEngine on
+
+## redirects follow
+
+# go shortcut
+RewriteRule ^go/irfc                 /projects/irfc         [NC,R=301,L]
+RewriteRule ^go/jobs                 /personal/jobs         [NC,R=301,L]
+RewriteRule ^go/pam_require          /projects/pam_require  [NC,R=301,L]
+RewriteRule ^go/videodb              /projects/videodb      [NC,R=301,L]
+RewriteRule ^go/xinabse              /projects/xinabse      [NC,R=301,L]
+RewriteRule ^go/ding                 http://notes.splitbrain.org/ding:intro  [NC,R=301,L]
+RewriteRule ^go/dokuwiki             /projects/dokuwiki     [NC,R=301,L]
+RewriteRule ^go/gbrain               /projects/gbrain       [NC,R=301,L]
+RewriteRule ^go/diplom               http://notes.splitbrain.org/manet:manet [NC,R=301,L]
+RewriteRule ^go/giraffe              /projects/giraffe      [NC,R=301,L]
+RewriteRule ^go/monsterid            /projects/monsterid      [NC,R=301,L]
+RewriteRule ^go/cdn            /blog/2016-12/21-javascript_cdn_by_the_numbers      [NC,R=301,L]
+
+# old pages
+RewriteRule ^b2/                     /blog                  [R=301,L]
+RewriteRule ^Fortunes/               /projects/fortunes     [R=301,L]
+RewriteRule ^Programming/            /projects              [R=301,L]
+RewriteRule ^Webdesign/              /websites              [R=301,L]
+RewriteRule ^About/                  /personal              [R=301,L]
+RewriteRule ^Study/Java/             /projects/java         [R=301,L]
+RewriteRule ^Study/more_Java/        /projects/java         [R=301,L]
+RewriteRule ^Study/diploma/          http://wiki.splitbrain.org/manet:manet [R=301,L]
+RewriteRule ^old/syndicates/(.*)     http://bms.splitbrain.org/$1  [R=301,L]
+
+RewriteRule ^feed/blog		     feed.php?ns=blog             [L]
+RewriteRule ^feed/links		     lib/plugins/linkblog/rss.php [L]
+
+## Comment these rules in if you want to have nice URLs
+RewriteRule ^_media/(.*)              lib/exe/fetch.php?media=$1  [QSA,L]
+RewriteRule ^_detail/(.*)             lib/exe/detail.php?media=$1  [QSA,L]
+RewriteRule ^_export/([^/]+)/(.*)     doku.php?do=export_$1&id=$2  [QSA,L]
+RewriteRule ^$                        doku.php  [L]
+RewriteCond %{REQUEST_FILENAME}       !-f
+RewriteCond %{REQUEST_FILENAME}       !-d
+RewriteRule (.*)                      doku.php?id=$1  [QSA,L]
+RewriteRule ^index.php$               doku.php
+

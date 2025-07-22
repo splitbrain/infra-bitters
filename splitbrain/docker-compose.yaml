@@ -1,18 +1,20 @@
 services:
   splitbrain:
-    image: chialab/php:8.2-apache
+    image: dokuwiki/dokuwiki:stable
     container_name: splitbrain
     user: 1005:1005 # splitbrain
     restart: unless-stopped
     volumes:
-      - ./volumes/htdocs:/var/www/html/
-      - ./conf/php.ini:/usr/local/etc/php/conf.d/php.ini:ro
+       - ./volumes/storage:/storage
+       - ./conf/htaccess:/var/www/html/.htaccess
 
     labels:
       traefik.enable: true
       traefik.http.routers.splitbrain.rule: Host(`www.splitbrain.org`) || Host(`splitbrain.org`)
       traefik.http.routers.splitbrain.tls.certresolver: letsencrypt
       traefik.http.routers.splitbrain.middlewares: redirect-to-www@file, splitbrain-static-redir@docker
+      traefik.http.services.splitbrain.loadbalancer.server.port: 8080
+
 
       # Note: all dollar signs need to be doubled for escaping.
       traefik.http.middlewares.splitbrain-static-redir.redirectregex.regex: "^https://www.splitbrain.org/_static/(.*)"
