@@ -23,7 +23,7 @@ services:
 
       chadburn.enabled: "true"
       chadburn.job-exec.linkblog.schedule: "@daily"
-      chadburn.job-exec.linkblog.command: "php /var/www/html/lib/plugins/linkblog/cron.php"
+      chadburn.job-exec.linkblog.command: "php /var/www/html/bin/plugin.php linkblog"
     networks:
       - traefik
 
