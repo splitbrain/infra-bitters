@@ -7,6 +7,10 @@ services:
     volumes:
        - ./volumes/storage:/storage
        - ./conf/htaccess:/var/www/html/.htaccess
+    environment:
+      PHP_TIMEZONE: Europe/Berlin
+      PHP_MEMORYLIMIT: 256M
+      PHP_UPLOADLIMIT: 128M
 
     labels:
       traefik.enable: true
