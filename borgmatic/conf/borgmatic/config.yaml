@@ -3,7 +3,7 @@ source_directories:
     - /mnt/source/etc
 repositories:
     - path: ssh://u408911@u408911.your-storagebox.de:23/home/borg/bitters/repo
-      name: hetzner
+      label: hetzner
 one_file_system: true
 
 #   Passphase is set in varibable $BORG_PASSPHRASE
@@ -45,12 +45,27 @@ checks:
   - name: data
     frequency: 1 month
 
-before_everything:
-    - echo "Starting a backup job."
-after_everything:
-    - echo "Backup created."
-on_error:
-    - echo "Error while creating a backup."
+apprise:
+    states:
+        - start
+        - finish
+        - fail
 
-#healthchecks:
-#    ping_url: ${BORG_HEALTHCHECK_URL}
+    services:
+        - url: mailto://172.17.0.1?to=splitbrain@gmail.com&from=borgmatic@splitbrain.org
+          label: mail
+
+    start:
+        title: ⚙️ Started
+        body: Starting backup process.
+
+    finish:
+        title: ✅ SUCCESS
+        body: Backups successfully made.
+
+    fail:
+        title: ❌ FAILED
+        body: Your backups have failed.
+
+healthchecks:
+    ping_url: https://hc-ping.com/5cad2c10-fd81-4435-bf44-1a707bc18fa5
