@@ -1,7 +1,8 @@
 services:
   borgmatic:
-    image: ghcr.io/borgmatic-collective/borgmatic
+    image: ghcr.io/borgmatic-collective/borgmatic:2
     container_name: borgmatic
+    restart: unless-stopped
     volumes:
       - /srv:/mnt/source/srv:ro                  # backup srv
       - /etc:/mnt/source/etc:ro                  # backup host etc
