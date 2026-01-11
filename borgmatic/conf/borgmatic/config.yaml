@@ -30,7 +30,7 @@ exclude_if_present:
 
 
 #keep_hourly: 2
-keep_daily: 1
+keep_daily: 3
 keep_weekly: 1
 keep_monthly: 1
 #keep_yearly: 10
@@ -47,8 +47,8 @@ checks:
 
 apprise:
     states:
-        - start
-        - finish
+        #- start
+        #- finish
         - fail
 
     services:
@@ -56,15 +56,15 @@ apprise:
           label: mail
 
     start:
-        title: ⚙️ Started
+        title: "⚙️ Backup bitters: started"
         body: Starting backup process.
 
     finish:
-        title: ✅ SUCCESS
+        title: "✅ Backup bitters: SUCCESS"
         body: Backups successfully made.
 
     fail:
-        title: ❌ FAILED
+        title: "❌ Backup bitters: FAILED"
         body: Your backups have failed.
 
 healthchecks:
