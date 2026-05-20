@@ -16,6 +16,9 @@ services:
       chadburn.job-exec.harvila-autoconfirm.schedule: "30 01 * * *"
       chadburn.job-exec.harvila-autoconfirm.command: "php artisan cron:autoconfirm"
 
+      chadburn.job-exec.harvila-review.schedule: "45 01 * * *"
+      chadburn.job-exec.harvila-review.command: "php artisan cron:review"
+
       chadburn.job-exec.harvila-reminder.schedule: "30 11 * * *"
       chadburn.job-exec.harvila-reminder.command: "php artisan cron:reminder"
 
