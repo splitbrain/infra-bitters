@@ -17,6 +17,7 @@ entryPoints:
     http:
       middlewares:
         - blockpath@file
+        - crowdsec@file
 
   metrics:
     address: ":8082"
@@ -82,3 +83,6 @@ experimental:
     blockpath:
       modulename: "github.com/traefik/plugin-blockpath"
       version: "v0.2.1"
+    crowdsec:
+      moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+      version: "v1.6.0"

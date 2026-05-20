@@ -25,6 +25,7 @@ services:
       GANDIV5_API_KEY: ${GANDIV5_API_KEY}
       BASIC_AUTH_USER: ${BASIC_AUTH_USER}
       BASIC_AUTH_PASSWORD: ${BASIC_AUTH_PASSWORD}
+      CROWDSEC_BOUNCER_KEY: ${CROWDSEC_BOUNCER_KEY}
     command:
       - "--configFile=/traefik/traefik.yaml"
     labels:
@@ -37,6 +38,23 @@ services:
       chadburn.enabled: "true"
       chadburn.job-exec.traefik-logrotate.schedule: "@weekly"
       chadburn.job-exec.traefik-logrotate.command: "/traefik/logrotate.sh"
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      GID: "1000"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules"
+      BOUNCER_KEY_TRAEFIK: ${CROWDSEC_BOUNCER_KEY}
+    volumes:
+      - ./volumes/log:/var/log/traefik:ro
+      - ./volumes/crowdsec/db:/var/lib/crowdsec/data
+      - ./volumes/crowdsec/config:/etc/crowdsec
+      - ./conf/acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
+    networks:
+      - traefik
 
   goaccess:
     image: allinurl/goaccess
