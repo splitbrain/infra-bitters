@@ -2,6 +2,9 @@ services:
   boxes-orchestrator:
     image: ghcr.io/splitbrain/boxes/orchestrator:latest
     container_name: boxes-orchestrator
+    user: 1020:1020
+    group_add:
+      - ${BOXES_DOCKER_GID:?BOXES_DOCKER_GID must be the host docker gid}
     restart: unless-stopped
     depends_on:
       - boxes-egress-proxy
