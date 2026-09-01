@@ -9,13 +9,16 @@
 #
 # First boot
 # ----------
-#   1. put BOXES_CLAUDE_CODE_OAUTH_TOKEN and BOXES_GH_TOKEN in the root .env
+#   1. make the three GHCR packages public, or keep this host logged in to
+#      ghcr.io -- watchtower already reads /root/.docker/config.json, and a
+#      package GitHub has just created for the first time is private
+#   2. put BOXES_CLAUDE_CODE_OAUTH_TOKEN and BOXES_GH_TOKEN in the root .env
 #      (`claude setup-token` prints the first; the second is a classic PAT)
-#   2. docker pull ghcr.io/splitbrain/boxes/session:sha-0000000
-#   3. docker compose up -d boxes-orchestrator boxes-egress-proxy
-#   4. touch volumes/data/workspaces/.nobackup
+#   3. docker pull ghcr.io/splitbrain/boxes/session:sha-0000000
+#   4. docker compose up -d boxes-orchestrator boxes-egress-proxy
+#   5. touch volumes/data/workspaces/.nobackup
 #
-# Step 4 keeps the agents' checkouts out of borg: /srv is a source directory,
+# Step 5 keeps the agents' checkouts out of borg: /srv is a source directory,
 # and a workspace is a working copy with a node_modules in it. The directory
 # is created by the orchestrator on first boot, so this is after, not before.
 # Everything else under volumes/data -- the database, the generated gateway
@@ -95,6 +98,8 @@ services:
       # session container and the daemon resolves bind sources, so the
       # orchestrator needs the path the *daemon* knows /data by; it inspects
       # its own container at boot and takes the Source of the mount below.
+      # If that ever fails it says so and refuses to start, and the answer is
+      # to set this to the absolute host path of ./volumes/data.
 
     volumes:
       # Root-equivalent, and the whole point: this is how sessions are made.
