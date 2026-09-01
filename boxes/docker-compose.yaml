@@ -1,0 +1,169 @@
+# Boxes -- AI coding-agent sessions in isolated containers.
+# https://github.com/splitbrain/boxes
+#
+# Two services here. The third image, the session image, is deliberately not a
+# service: the orchestrator creates one container per session at runtime over
+# the Docker socket, each on an internal network of its own, so those
+# containers appear in no compose file and are not compose's to manage.
+#
+#
+# First boot
+# ----------
+#   1. put BOXES_CLAUDE_CODE_OAUTH_TOKEN and BOXES_GH_TOKEN in the root .env
+#      (`claude setup-token` prints the first; the second is a classic PAT)
+#   2. docker pull ghcr.io/splitbrain/boxes/session:sha-0000000
+#   3. docker compose up -d boxes-orchestrator boxes-egress-proxy
+#   4. touch volumes/data/workspaces/.nobackup
+#
+# Step 4 keeps the agents' checkouts out of borg: /srv is a source directory,
+# and a workspace is a working copy with a node_modules in it. The directory
+# is created by the orchestrator on first boot, so this is after, not before.
+# Everything else under volumes/data -- the database, the generated gateway
+# token, the VAPID keypair, the egress CA -- is small and worth having.
+#
+#
+# Updating
+# --------
+# The orchestrator and the proxy follow `latest`, so watchtower rolls them
+# forward whenever the repository's publish workflow pushes new ones. Nothing
+# to do.
+#
+# The session image is pinned, and moving it is manual:
+#
+#   1. take the new sha-<short> tag from the Actions run into SESSION_IMAGE
+#   2. docker pull ghcr.io/splitbrain/boxes/session:<tag>
+#   3. docker compose up -d boxes-orchestrator
+#   4. recreate sessions -- an existing container keeps the image it was
+#      created on, and its home volume holds transcripts written by the
+#      adapter version that shipped in it
+#
+# Step 2 is not optional: the orchestrator creates containers, it does not
+# pull. A missing session image shows up as a session that will not start.
+#
+# The pin is also what keeps watchtower off the session containers. They carry
+# no `com.centurylinklabs.watchtower.enable=false` label -- the orchestrator
+# builds them from a fixed hardened template with no room for one -- so on a
+# moving tag watchtower would stop and recreate them behind the orchestrator's
+# back: the container ids in its database would point at nothing, and the
+# egress proxy attachment that is a session's only way out would be gone. A
+# tag that never moves gives watchtower nothing to do.
+
+services:
+  boxes-orchestrator:
+    image: ghcr.io/splitbrain/boxes/orchestrator:latest
+    container_name: boxes-orchestrator
+    restart: unless-stopped
+    # No `user:`, unlike everything else here. The orchestrator chowns each
+    # session's workspace directory to the agent uid so the agent can write
+    # its own files, and only root can give a file away. It holds the Docker
+    # socket in any case, which is root-equivalent on this host; the basicauth
+    # on the router below is what keeps that ours.
+    depends_on:
+      - boxes-egress-proxy
+
+    environment:
+      TZ: Europe/Berlin
+
+      # Pinned and pulled by hand -- see "Updating" above.
+      SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:sha-0000000
+
+      # Neither credential ever reaches a session container: the egress proxy
+      # holds them, swaps them onto the wire for their own hosts, and refuses
+      # any other credential to those hosts. A session sees a placeholder of
+      # the same shape, which is worth nothing if it leaks.
+      PROFILE_DEFAULT_CLAUDE_CODE_OAUTH_TOKEN: ${BOXES_CLAUDE_CODE_OAUTH_TOKEN}
+      PROFILE_DEFAULT_GH_TOKEN: ${BOXES_GH_TOKEN}
+      PROFILE_DEFAULT_GIT_NAME: boxes-bot
+      PROFILE_DEFAULT_GIT_EMAIL: boxes-bot@users.noreply.github.com
+
+      # Web Push needs no keys here -- the deployment generates its own VAPID
+      # pair into the data volume the first time a browser subscribes. This is
+      # only who a push service contacts when it has a problem with what we
+      # send it.
+      PUSH_SUBJECT: mailto:andi@splitbrain.org
+      # The channel that works with no browser open at all. Optional.
+      NTFY_URL: ${BOXES_NTFY_URL:-}
+
+      # EGRESS_ALLOWED_HOSTS is deliberately unset: sessions reach any public
+      # host, and private ranges stay denied either way, which is the part
+      # that matters. An agent that cannot apt-get, pip install or read a docs
+      # page is not much of an agent. To narrow it later, exact names and
+      # one-label wildcards, comma separated:
+      #EGRESS_ALLOWED_HOSTS: github.com,*.github.com,*.githubusercontent.com,api.anthropic.com,registry.npmjs.org
+
+      # HOST_DATA_DIR stays unset. A workspace is bind-mounted into its
+      # session container and the daemon resolves bind sources, so the
+      # orchestrator needs the path the *daemon* knows /data by; it inspects
+      # its own container at boot and takes the Source of the mount below.
+
+    volumes:
+      # Root-equivalent, and the whole point: this is how sessions are made.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The database, the generated gateway token, the VAPID keypair, the
+      # egress CA, and one directory per session workspace. A bind rather than
+      # a named volume so borg sees it and so the workspaces are reachable
+      # from the host.
+      - ./volumes/data:/data
+
+    labels:
+      traefik.enable: true
+      traefik.http.services.boxes.loadbalancer.server.port: "3000"
+
+      # Two routers onto one service, because /ws must *not* be behind HTTP
+      # authentication and everything else must be.
+      #
+      # / is the dashboard and /api creates containers on this host, so they
+      # get the shared basicauth. Nothing in Boxes authenticates them itself.
+      traefik.http.routers.boxes.rule: Host(`boxes.splitbrain.net`)
+      traefik.http.routers.boxes.priority: "10"
+      traefik.http.routers.boxes.service: boxes
+      traefik.http.routers.boxes.tls.certresolver: letsencrypt
+      traefik.http.routers.boxes.middlewares: basicauth@file
+
+      # /ws is the ACP gateway. A browser cannot put Basic credentials on a
+      # WebSocket upgrade, so guarding this breaks every thread view -- and it
+      # needs no guard: the gateway authenticates the upgrade itself against
+      # the token it carries in the bearer.<token> subprotocol. The explicit
+      # priority is what stops the router above from swallowing it.
+      traefik.http.routers.boxes-ws.rule: Host(`boxes.splitbrain.net`) && PathPrefix(`/ws`)
+      traefik.http.routers.boxes-ws.priority: "20"
+      traefik.http.routers.boxes-ws.service: boxes
+      traefik.http.routers.boxes-ws.tls.certresolver: letsencrypt
+
+    networks:
+      - traefik
+      - boxes
+
+  boxes-egress-proxy:
+    image: ghcr.io/splitbrain/boxes/egress-proxy:latest
+    # Fixed name, and the orchestrator's default for EGRESS_PROXY_CONTAINER:
+    # it looks this container up by name to attach it to each new session
+    # network, and to push it the egress policy. Rename it and sessions get no
+    # egress at all.
+    container_name: boxes-egress-proxy
+    restart: unless-stopped
+    # It boots empty and is handed its policy, its credentials and its CA over
+    # the control channel below, keeping all three in memory. Nothing is ever
+    # written, so the rootfs can be read-only and a restart leaves nothing
+    # behind -- the orchestrator's reconciler pushes again within a minute.
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      TZ: Europe/Berlin
+    networks:
+      - boxes
+
+networks:
+  traefik:
+    name: traefik
+
+  # The orchestrator and the proxy, and nothing else. Two things ride it: the
+  # authenticated control channel the policy and the real credentials are
+  # pushed over, and the proxy's own route out -- so it must not be `internal`.
+  # Session networks are internal and are attached to the proxy at runtime, so
+  # nothing in a session can route back here.
+  boxes:
+    name: boxes
