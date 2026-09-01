@@ -14,11 +14,10 @@
 #      package GitHub has just created for the first time is private
 #   2. put BOXES_CLAUDE_CODE_OAUTH_TOKEN and BOXES_GH_TOKEN in the root .env
 #      (`claude setup-token` prints the first; the second is a classic PAT)
-#   3. docker pull ghcr.io/splitbrain/boxes/session:sha-0000000
-#   4. docker compose up -d boxes-orchestrator boxes-egress-proxy
-#   5. touch volumes/data/workspaces/.nobackup
+#   3. docker compose up -d boxes-orchestrator boxes-egress-proxy
+#   4. touch volumes/data/workspaces/.nobackup
 #
-# Step 5 keeps the agents' checkouts out of borg: /srv is a source directory,
+# Step 4 keeps the agents' checkouts out of borg: /srv is a source directory,
 # and a workspace is a working copy with a node_modules in it. The directory
 # is created by the orchestrator on first boot, so this is after, not before.
 # Everything else under volumes/data -- the database, the generated gateway
@@ -27,29 +26,20 @@
 #
 # Updating
 # --------
-# The orchestrator and the proxy follow `latest`, so watchtower rolls them
-# forward whenever the repository's publish workflow pushes new ones. Nothing
-# to do.
+# Nothing to do, for any of the three images.
 #
-# The session image is pinned, and moving it is manual:
+# The orchestrator and the proxy follow `latest` and watchtower rolls them
+# forward whenever the repository's publish workflow pushes new ones.
 #
-#   1. take the new sha-<short> tag from the Actions run into SESSION_IMAGE
-#   2. docker pull ghcr.io/splitbrain/boxes/session:<tag>
-#   3. docker compose up -d boxes-orchestrator
-#   4. recreate sessions -- an existing container keeps the image it was
-#      created on, and its home volume holds transcripts written by the
-#      adapter version that shipped in it
-#
-# Step 2 is not optional: the orchestrator creates containers, it does not
-# pull. A missing session image shows up as a session that will not start.
-#
-# The pin is also what keeps watchtower off the session containers. They carry
-# no `com.centurylinklabs.watchtower.enable=false` label -- the orchestrator
-# builds them from a fixed hardened template with no room for one -- so on a
-# moving tag watchtower would stop and recreate them behind the orchestrator's
-# back: the container ids in its database would point at nothing, and the
-# egress proxy attachment that is a session's only way out would be gone. A
-# tag that never moves gives watchtower nothing to do.
+# The session image follows `latest` too, but watchtower has nothing to do
+# with it: session containers are not compose's, and one recreated from
+# outside would leave the container id in the orchestrator's database pointing
+# at nothing and drop the egress proxy attachment that is that session's only
+# way out. So they carry `com.centurylinklabs.watchtower.enable=false`, and
+# the orchestrator keeps the image current itself -- it pulls it hourly and
+# moves each session onto what arrived the next time that session is started,
+# never while it is running. The idle reaper stops an unused session after 30
+# minutes, so they roll forward on their own within a day.
 
 services:
   boxes-orchestrator:
@@ -67,8 +57,9 @@ services:
     environment:
       TZ: Europe/Berlin
 
-      # Pinned and pulled by hand -- see "Updating" above.
-      SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:sha-0000000
+      # Followed, not pinned: the orchestrator pulls this itself and rolls
+      # sessions onto it at start. See "Updating" above.
+      SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:latest
 
       # Neither credential ever reaches a session container: the egress proxy
       # holds them, swaps them onto the wire for their own hosts, and refuses
