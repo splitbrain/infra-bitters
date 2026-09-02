@@ -16,6 +16,7 @@ include:
   - ots/docker-compose.yaml
   - fedi/docker-compose.yaml
   - meh/docker-compose.yaml
+  - boxes/docker-compose.yaml
 
   - harvila/docker-compose.yaml
 

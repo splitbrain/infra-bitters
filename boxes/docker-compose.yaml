@@ -1,0 +1,64 @@
+services:
+  boxes-orchestrator:
+    image: ghcr.io/splitbrain/boxes/orchestrator:latest
+    container_name: boxes-orchestrator
+    user: 1020:1020
+    group_add:
+      - ${BOXES_DOCKER_GID:?BOXES_DOCKER_GID must be the host docker gid}
+    restart: unless-stopped
+    depends_on:
+      - boxes-egress-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/data:/data
+
+    environment:
+      TZ: Europe/Berlin
+      SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:latest
+      PROFILE_DEFAULT_CLAUDE_CODE_OAUTH_TOKEN: ${BOXES_CLAUDE_CODE_OAUTH_TOKEN}
+      PROFILE_DEFAULT_GH_TOKEN: ${BOXES_GH_TOKEN}
+      PROFILE_DEFAULT_GIT_NAME: boxes-bot
+      PROFILE_DEFAULT_GIT_EMAIL: boxes-bot@users.noreply.github.com
+      PUSH_SUBJECT: mailto:andi@splitbrain.org
+      NTFY_URL: ${BOXES_NTFY_URL:-}
+
+    labels:
+      traefik.enable: true
+      traefik.http.services.boxes.loadbalancer.server.port: "3000"
+
+      traefik.http.routers.boxes.rule: Host(`boxes.splitbrain.net`)
+      traefik.http.routers.boxes.priority: "10"
+      traefik.http.routers.boxes.service: boxes
+      traefik.http.routers.boxes.tls.certresolver: letsencrypt
+      traefik.http.routers.boxes.middlewares: basicauth@file
+
+      traefik.http.routers.boxes-ws.rule: Host(`boxes.splitbrain.net`) && PathPrefix(`/ws`)
+      traefik.http.routers.boxes-ws.priority: "20"
+      traefik.http.routers.boxes-ws.service: boxes
+      traefik.http.routers.boxes-ws.tls.certresolver: letsencrypt
+
+    networks:
+      - traefik
+      - boxes
+
+  boxes-egress-proxy:
+    image: ghcr.io/splitbrain/boxes/egress-proxy:latest
+    container_name: boxes-egress-proxy
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    environment:
+      TZ: Europe/Berlin
+
+    networks:
+      - boxes
+
+networks:
+  traefik:
+    name: traefik
+  boxes:
+    name: boxes
