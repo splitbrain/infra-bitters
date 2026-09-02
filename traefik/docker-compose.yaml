@@ -53,6 +53,7 @@ services:
       - ./volumes/crowdsec/db:/var/lib/crowdsec/data
       - ./volumes/crowdsec/config:/etc/crowdsec
       - ./conf/acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
+      - ./conf/crowdsec.yaml:/etc/crowdsec/config.yaml.local:ro
     networks:
       - traefik
 
