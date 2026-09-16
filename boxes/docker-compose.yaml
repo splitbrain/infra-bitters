@@ -4,7 +4,7 @@ services:
     container_name: boxes-orchestrator
     user: 1020:1020
     group_add:
-      - ${BOXES_DOCKER_GID:?BOXES_DOCKER_GID must be the host docker gid}
+      - 998
     restart: unless-stopped
     depends_on:
       - boxes-egress-proxy
@@ -12,15 +12,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volumes/data:/data
 
+    env_file: ".env"
     environment:
       TZ: Europe/Berlin
       SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:latest
-      PROFILE_DEFAULT_CLAUDE_CODE_OAUTH_TOKEN: ${BOXES_CLAUDE_CODE_OAUTH_TOKEN}
-      PROFILE_DEFAULT_GH_TOKEN: ${BOXES_GH_TOKEN}
-      PROFILE_DEFAULT_GIT_NAME: boxes-bot
-      PROFILE_DEFAULT_GIT_EMAIL: boxes-bot@users.noreply.github.com
-      PUSH_SUBJECT: mailto:andi@splitbrain.org
-      NTFY_URL: ${BOXES_NTFY_URL:-}
 
     labels:
       traefik.enable: true
