@@ -61,8 +61,8 @@ services:
       - ./volumes/storage:/app/storage
     environment:
       TZ: Europe/Berlin
-      JAMES_SECRET: ${JAMES_SECRET:?JAMES_SECRET is the token key shared with harvila}
-      JAMES_API_KEY: ${JAMES_API_KEY:?JAMES_API_KEY is the Anthropic API key}
+      JAMES_SECRET: ${HARVILA_JAMES_SECRET:?HARVILA_JAMES_SECRET is the token key harvila signs with}
+      JAMES_API_KEY: ${HARVILA_JAMES_API_KEY:?HARVILA_JAMES_API_KEY is the Anthropic API key}
 
     labels:
       traefik.enable: true
