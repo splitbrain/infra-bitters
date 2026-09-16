@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./volumes/storage:/app/storage
+      - ./volumes/code:/code
     env_file: ".env"
 
     labels:
@@ -28,6 +29,9 @@ services:
       chadburn.job-exec.harvila-import.schedule: "*/15 * * * *"
       chadburn.job-exec.harvila-import.command: "php artisan cron:import"
 
+      chadburn.job-exec.harvila-code.schedule: "15 03 * * *"
+      chadburn.job-exec.harvila-code.command: "sh -c 'find /code -mindepth 1 -delete && tar -C /app --exclude=./.git --exclude=./vendor --exclude=./node_modules --exclude=./storage/* -cf - . | tar -C /code -xf -'"
+
     networks:
       - traefik
 
@@ -42,6 +46,29 @@ services:
       traefik.http.routers.harvila-mailpit.rule: Host(`harvila-mailpit.splitbrain.net`)
       traefik.http.routers.harvila-mailpit.tls.certresolver: letsencrypt
       traefik.http.services.harvila-mailpit.loadbalancer.server.port: 8025
+
+    networks:
+      - traefik
+
+  james:
+    image: ghcr.io/splitbrain/james:latest
+    container_name: harvila-james
+    user: 33:33
+    restart: unless-stopped
+    volumes:
+      - ./conf:/etc/james:ro
+      - ./volumes/code:/app
+      - ./volumes/storage:/app/storage
+    environment:
+      TZ: Europe/Berlin
+      JAMES_SECRET: ${JAMES_SECRET:?JAMES_SECRET is the token key shared with harvila}
+      JAMES_API_KEY: ${JAMES_API_KEY:?JAMES_API_KEY is the Anthropic API key}
+
+    labels:
+      traefik.enable: true
+      traefik.http.routers.harvila-james.rule: Host(`booking.winkel-hausboote.de`) && PathPrefix(`/james`)
+      traefik.http.routers.harvila-james.tls.certresolver: letsencrypt
+      traefik.http.services.harvila-james.loadbalancer.server.port: 8080
 
     networks:
       - traefik
