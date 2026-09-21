@@ -12,10 +12,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volumes/data:/data
 
-    env_file: ".env"
     environment:
       TZ: Europe/Berlin
       SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:latest
+      GITLAB_HOST: gitlab.cosmocode.de
 
     labels:
       traefik.enable: true
