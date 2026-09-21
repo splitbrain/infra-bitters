@@ -30,7 +30,7 @@ services:
       chadburn.job-exec.harvila-import.command: "php artisan cron:import"
 
       chadburn.job-exec.harvila-code.schedule: "15 03 * * *"
-      chadburn.job-exec.harvila-code.command: "sh -c 'find /code -mindepth 1 -delete && tar -C /app --exclude=./.git --exclude=./vendor --exclude=./node_modules --exclude=./storage/* -cf - . | tar -C /code -xf -'"
+      chadburn.job-exec.harvila-code.command: "sh -c 'find /code -mindepth 1 -delete && tar -C /app --exclude=./.git --exclude=./vendor --exclude=./node_modules --exclude=./storage -cf - . | tar -C /code -xf -'"
 
     networks:
       - traefik
@@ -58,7 +58,7 @@ services:
     volumes:
       - ./conf:/etc/james:ro
       - ./volumes/code:/app
-      - ./volumes/storage:/app/storage
+      - ./volumes/storage:/data
     environment:
       TZ: Europe/Berlin
       JAMES_SECRET: ${HARVILA_JAMES_SECRET:?HARVILA_JAMES_SECRET is the token key harvila signs with}
