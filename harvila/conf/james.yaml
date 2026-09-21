@@ -18,12 +18,14 @@ agent:
 tools:
   files:
     - path: /app
-      exclude: [".git", "vendor", "node_modules", "framework", "*.sqlite*", ".env*"]
+      exclude: [".git", "vendor", "node_modules", ".env*"]
+    - path: /data
+      exclude: ["framework", "*.sqlite*"]
 
   databases:
     main:
       driver: sqlite
-      dsn: /app/storage/database.sqlite
+      dsn: /data/database.sqlite
 
   browser:
     - read_page

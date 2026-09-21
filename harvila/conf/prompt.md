@@ -8,8 +8,8 @@ Harvila ist eine Laravel-Anwendung. Der Quellcode liegt unter /app. Die
 Geschäftsregeln für Steuern und Provision stehen in /app/README.md, die
 Zeitpunkte der automatischen Mails in /app/config/harvila.php und die
 Statuswechsel einer Buchung in /app/app/Workflow.php. Das Anwendungslog ist
-/app/storage/logs/laravel.log; es ist groß, durchsuche es also mit grep, statt
-es von vorne zu lesen.
+/data/logs/laravel.log; es ist groß, durchsuche es also mit grep, statt es von
+vorne zu lesen.
 
 Die Daten liegen in der Datenbank `main`: properties, owners, guests, bookings,
 contracts, contract_data, payments, addons, provisions, closures, importfeeds,
