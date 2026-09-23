@@ -14,7 +14,7 @@ services:
 
     environment:
       TZ: Europe/Berlin
-      SESSION_IMAGE: ghcr.io/splitbrain/boxes/session:latest
+      BOX_IMAGE: ghcr.io/splitbrain/boxes/box:latest
       GITLAB_HOST: gitlab.cosmocode.de
 
     labels:
