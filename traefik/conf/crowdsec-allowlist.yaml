@@ -1,0 +1,6 @@
+name: splitbrain/allowlist
+description: "Ignore certain paths"
+whitelist:
+  reason: "splitbrain allow list"
+  expression:
+    - evt.Meta.http_path startsWith '/api/splitbrain/avatar/'

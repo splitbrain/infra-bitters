@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.7
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -54,6 +54,7 @@ services:
       - ./volumes/crowdsec/config:/etc/crowdsec
       - ./conf/acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
       - ./conf/crowdsec.yaml:/etc/crowdsec/config.yaml.local:ro
+      - ./conf/crowdsec-allowlist.yaml:/etc/crowdsec/parsers/s02-enrich/splitbrain-allowlist.yaml:ro
     networks:
       - traefik
 
