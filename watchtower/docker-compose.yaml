@@ -1,21 +1,19 @@
 services:
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower
+    image: nickfedor/watchtower
     restart: unless-stopped
     environment:
-      WATCHTOWER_NOTIFICATIONS: email
-      WATCHTOWER_NOTIFICATION_EMAIL_FROM: watchtower@splitbrain.org
-      WATCHTOWER_NOTIFICATION_EMAIL_TO: splitbrain@gmail.com
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER: 172.17.0.1
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: 25
-      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_TLS_SKIP_VERIFY: true
+      WATCHTOWER_NOTIFICATION_URL: smtp://172.17.0.1:25/?fromaddress=watchtower@splitbrain.org&fromname=Watchtower&toaddresses=splitbrain@gmail.com&auth=None&skiptlsverify=Yes
+      WATCHTOWER_NOTIFICATIONS_HOSTNAME: bitters
+      WATCHTOWER_HTTP_API_ENDPOINTS: update
       WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_HTTP_API_TOKEN}
+      WATCHTOWER_HTTP_API_PERIODIC_POLLS: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /root/.docker/config.json:/config.json
       - /etc/localtime:/etc/localtime:ro
-    command: --cleanup --http-api-update --http-api-periodic-polls
+    command: --cleanup
 
     labels:
       traefik.enable: true
